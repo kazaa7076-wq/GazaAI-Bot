@@ -28,9 +28,14 @@ bot.on("text", async (ctx) => {
 
     await ctx.reply(completion.choices[0].message.content);
   } catch (err) {
-    console.error(err);
-    await ctx.reply("❌ خطا در ارتباط با هوش مصنوعی");
+  console.error("FULL ERROR:", err);
+
+  if (err.response) {
+    console.error("RESPONSE:", err.response.data);
   }
+
+  await ctx.reply("❌ خطا در ارتباط با هوش مصنوعی");
+}
 });
 
 bot.launch();
