@@ -70,9 +70,7 @@ await ctx.reply(answer);
 
 } catch (error) {
 console.error("FULL ERROR:", error);
-onsole.error("FULL ERROR MESSAGE:", error.message);
-console.error("FULL ERROR OBJECT:", error);
-await ctx.reply("ERROR: " + error.message)
+await ctx.reply("❌ خطا در ارتباط با هوش مصنوعی");
 }
 });
 
