@@ -1,4 +1,5 @@
-require("dotenv").config();
+const dotenv = require("dotenv");
+dotenv.config();
 
 const { Telegraf } = require("telegraf");
 const OpenAI = require("openai");
@@ -6,47 +7,39 @@ const OpenAI = require("openai");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+apiKey: process.env.OPENAI_API_KEY,
 });
 
 bot.start((ctx) => {
-  ctx.reply(
-    "🤖 سلام!\n\nمن GazaAI هستم.\nهر سوالی داری بپرس."
-  );
+ctx.reply("🤖 سلام! من GazaAI هستم.");
 });
 
 bot.on("text", async (ctx) => {
-  try {
-    const userMessage = ctx.message.text;
+try {
+const completion = await openai.chat.completions.create({
+model: "gpt-4o-mini",
+messages: [
+{
+role: "user",
+content: ctx.message.text,
+},
+],
+});
 
-    if (userMessage === "/start") return;
+```
+await ctx.reply(completion.choices[0].message.content);
+```
 
-    await ctx.reply("⏳ در حال فکر کردن...");
+} catch (err) {
+console.error("ERROR:", err);
+console.error("MESSAGE:", err.message);
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful Persian AI assistant.",
-        },
-        {
-          role: "user",
-          content: userMessage,
-        },
-      ],
-    });
+```
+await ctx.reply("❌ خطا در ارتباط با OpenAI");
+```
 
-    await ctx.reply(response.choices[0].message.content);
-  } catch (error) {
-    console.error(error);
-
-    await ctx.reply(
-      "❌ خطا در ارتباط با هوش مصنوعی"
-    );
-  }
+}
 });
 
 bot.launch();
-
-console.log("🚀 GazaAI Bot Started");
+console.log("🚀 Bot Started");
