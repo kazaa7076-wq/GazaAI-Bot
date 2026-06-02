@@ -5,25 +5,50 @@ const { Telegraf } = require("telegraf");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.start((ctx) => {
-ctx.reply("🤖 سلام! من GazaAI هستم.");
+ctx.reply("🤖 سلام! من GazaAI هستم. هر سوالی داری بپرس.");
 });
 
 bot.on("text", async (ctx) => {
-const text = ctx.message.text.toLowerCase();
+try {
+const response = await fetch(
+"https://api.groq.com/openai/v1/chat/completions",
+{
+method: "POST",
+headers: {
+"Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+model: "llama-3.3-70b-versatile",
+messages: [
+{
+role: "system",
+content: "You are a helpful Persian AI assistant."
+},
+{
+role: "user",
+content: ctx.message.text
+}
+]
+})
+}
+);
 
-if (text.includes("سلام")) {
-return ctx.reply("سلام! حالت چطوره؟ 😊");
+```
+const data = await response.json();
+
+if (!data.choices) {
+  console.log(data);
+  return ctx.reply("❌ خطا در پاسخ هوش مصنوعی");
 }
 
-if (text.includes("اسم")) {
-return ctx.reply("من GazaAI هستم.");
-}
+await ctx.reply(data.choices[0].message.content);
+```
 
-if (text.includes("کمک")) {
-return ctx.reply("دستور خاصی بنویس یا سوالت را بپرس.");
+} catch (err) {
+console.error(err);
+await ctx.reply("❌ خطا در ارتباط با هوش مصنوعی");
 }
-
-return ctx.reply("پیامت دریافت شد: " + ctx.message.text);
 });
 
 bot.launch();
