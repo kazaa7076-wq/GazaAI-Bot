@@ -1,8 +1,5 @@
 require("dotenv").config();
 
-
-console.log("OPENAI =", process.env.OPENAI_API_KEY);
-
 const { Telegraf } = require("telegraf");
 const OpenAI = require("openai");
 
@@ -13,33 +10,43 @@ const openai = new OpenAI({
 });
 
 bot.start((ctx) => {
-  ctx.reply("🤖 سلام! من GazaAI هستم. هر سوالی داری بپرس.");
+  ctx.reply(
+    "🤖 سلام!\n\nمن GazaAI هستم.\nهر سوالی داری بپرس."
+  );
 });
 
 bot.on("text", async (ctx) => {
   try {
-    const userText = ctx.message.text;
+    const userMessage = ctx.message.text;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
+    if (userMessage === "/start") return;
+
+    await ctx.reply("⏳ در حال فکر کردن...");
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: "You are a helpful Persian AI assistant." },
-        { role: "user", content: userText }
-      ]
+        {
+          role: "system",
+          content: "You are a helpful Persian AI assistant.",
+        },
+        {
+          role: "user",
+          content: userMessage,
+        },
+      ],
     });
 
-    catch (err) {
-  console.error("ERROR MESSAGE:", err.message);
-  console.error("ERROR STATUS:", err.status);
+    await ctx.reply(response.choices[0].message.content);
+  } catch (error) {
+    console.error(error);
 
-  try {
-    console.error("ERROR JSON:", JSON.stringify(err, null, 2));
-  } catch {}
-
-  await ctx.reply("❌ خطا در ارتباط با هوش مصنوعی");
-}
-  
+    await ctx.reply(
+      "❌ خطا در ارتباط با هوش مصنوعی"
+    );
+  }
 });
 
 bot.launch();
+
 console.log("🚀 GazaAI Bot Started");
