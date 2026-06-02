@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const fetch = global.fetch;
 const { Telegraf } = require("telegraf");
 
 console.log("BOT =", !!process.env.BOT_TOKEN);
@@ -19,40 +20,34 @@ const response = await fetch(
 method: "POST",
 headers: {
 Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-"Content-Type": "application/json",
+"Content-Type": "application/json"
 },
 body: JSON.stringify({
 model: "llama-3.3-70b-versatile",
 messages: [
 {
 role: "system",
-content: "You are a helpful Persian AI assistant.",
+content: "You are a helpful Persian AI assistant."
 },
 {
 role: "user",
-content: ctx.message.text,
-},
-],
-}),
+content: ctx.message.text
+}
+]
+})
 }
 );
 
 ```
 const data = await response.json();
 
-console.log("GROQ RESPONSE:", JSON.stringify(data));
+console.log("GROQ RESPONSE:", data);
 
 if (!response.ok) {
   return ctx.reply("❌ خطا در ارتباط با Groq");
 }
 
-const answer = data.choices?.[0]?.message?.content;
-
-if (!answer) {
-  return ctx.reply("❌ پاسخی از هوش مصنوعی دریافت نشد");
-}
-
-await ctx.reply(answer);
+await ctx.reply(data.choices[0].message.content);
 ```
 
 } catch (err) {
