@@ -1,6 +1,6 @@
-require("dotenv").config();
 
-const fetch = global.fetch;
+require("dotenv").config();
+const fetch = require("node-fetch");
 const { Telegraf } = require("telegraf");
 
 console.log("BOT =", !!process.env.BOT_TOKEN);
