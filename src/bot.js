@@ -1,5 +1,5 @@
-
 require("dotenv").config();
+
 const fetch = require("node-fetch");
 const { Telegraf } = require("telegraf");
 
@@ -19,7 +19,7 @@ const response = await fetch(
 {
 method: "POST",
 headers: {
-Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+"Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
 "Content-Type": "application/json"
 },
 body: JSON.stringify({
@@ -47,6 +47,10 @@ if (!response.ok) {
   return ctx.reply("❌ خطا در ارتباط با Groq");
 }
 
+if (!data.choices || !data.choices[0]) {
+  return ctx.reply("❌ پاسخی دریافت نشد");
+}
+
 await ctx.reply(data.choices[0].message.content);
 ```
 
@@ -57,4 +61,5 @@ await ctx.reply("❌ خطا در ارتباط با هوش مصنوعی");
 });
 
 bot.launch();
+
 console.log("🚀 GazaAI Bot Started");
