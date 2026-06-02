@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 
 console.log("OPENAI =", process.env.OPENAI_API_KEY);
 
@@ -19,23 +21,24 @@ bot.on("text", async (ctx) => {
     const userText = ctx.message.text;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4.1-mini",
       messages: [
         { role: "system", content: "You are a helpful Persian AI assistant." },
         { role: "user", content: userText }
       ]
     });
 
-    await ctx.reply(completion.choices[0].message.content);
-  } catch (err) {
-  console.error("FULL ERROR:", err);
+    catch (err) {
+  console.error("ERROR MESSAGE:", err.message);
+  console.error("ERROR STATUS:", err.status);
 
-  if (err.response) {
-    console.error("RESPONSE:", err.response.data);
-  }
+  try {
+    console.error("ERROR JSON:", JSON.stringify(err, null, 2));
+  } catch {}
 
   await ctx.reply("❌ خطا در ارتباط با هوش مصنوعی");
 }
+  
 });
 
 bot.launch();
