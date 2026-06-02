@@ -1,5 +1,6 @@
 require("dotenv").config();
-
+console.log("BOT =", !!process.env.BOT_TOKEN);
+console.log("GROQ =", !!process.env.GROQ_API_KEY);
 const { Telegraf } = require("telegraf");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
