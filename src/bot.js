@@ -6,6 +6,11 @@ const OpenAI = require("openai");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
+bot.on("text", (ctx, next) => {
+  console.log("MESSAGE RECEIVED:", ctx.message.text);
+  return next();
+});
+
 const openai = new OpenAI({
 apiKey: process.env.OPENAI_API_KEY,
 });
