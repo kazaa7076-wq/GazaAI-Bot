@@ -1,7 +1,3 @@
-require("dotenv").config();
-
-console.log(process.cwd());
-console.log(process.env);
 
 console.log("OPENAI =", process.env.OPENAI_API_KEY);
 
