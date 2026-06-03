@@ -1,79 +1,67 @@
 require("dotenv").config();
 
-const fetch = require("node-fetch");
-const { Telegraf } = require("telegraf");
-
-if (!process.env.BOT_TOKEN) {
-console.error("BOT_TOKEN not found");
-process.exit(1);
-}
-
-if (!process.env.GROQ_API_KEY) {
-console.error("GROQ_API_KEY not found");
-process.exit(1);
-}
+const { Telegraf, Markup } = require("telegraf");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.start((ctx) => {
-ctx.reply("🤖 سلام! من GazaAI هستم. هر سوالی داری بپرس.");
+ctx.reply(
+"🚀 به ربات تولید محتوای اینستاگرام خوش آمدید",
+Markup.keyboard([
+["📝 تولید کپشن", "🎬 ایده ریلز"],
+["#️⃣ هشتگ", "📢 متن تبلیغاتی"],
+["👑 خرید اشتراک", "ℹ️ راهنما"]
+]).resize()
+);
 });
 
-bot.on("text", async (ctx) => {
-try {
-const response = await fetch(
-"https://api.groq.com/openai/v1/chat/completions",
-{
-method: "POST",
-headers: {
-"Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
-"Content-Type": "application/json"
-},
-body: JSON.stringify({
-model: "llama-3.3-70b-versatile",
-messages: [
-{
-role: "system",
-content: "You are a helpful Persian AI assistant. Answer in Persian."
-},
-{
-role: "user",
-content: ctx.message.text
-}
-]
-})
-}
+bot.hears("📝 تولید کپشن", (ctx) => {
+ctx.reply("موضوع کپشن را ارسال کنید.\nمثال: فروش موبایل");
+});
+
+bot.hears("🎬 ایده ریلز", (ctx) => {
+ctx.reply("موضوع ریلز را ارسال کنید.");
+});
+
+bot.hears("#️⃣ هشتگ", (ctx) => {
+ctx.reply("موضوع را ارسال کنید تا هشتگ دریافت کنید.");
+});
+
+bot.hears("📢 متن تبلیغاتی", (ctx) => {
+ctx.reply("موضوع تبلیغ را ارسال کنید.");
+});
+
+bot.hears("👑 خرید اشتراک", (ctx) => {
+ctx.reply(
+"نسخه ویژه:\n\n✅ تولید محتوای بیشتر\n✅ ایده‌های حرفه‌ای\n✅ پشتیبانی ویژه\n\nبرای خرید با ادمین تماس بگیرید."
 );
+});
 
-```
-const data = await response.json();
+bot.hears("ℹ️ راهنما", (ctx) => {
+ctx.reply(
+"از منوی پایین گزینه مورد نظر را انتخاب کنید."
+);
+});
 
-if (!response.ok) {
-  console.error("GROQ ERROR:", data);
-  return ctx.reply("❌ خطا در پاسخ هوش مصنوعی");
+bot.on("text", (ctx) => {
+const text = ctx.message.text;
+
+if (
+text.startsWith("📝") ||
+text.startsWith("🎬") ||
+text.startsWith("#️⃣") ||
+text.startsWith("📢") ||
+text.startsWith("👑") ||
+text.startsWith("ℹ️")
+) {
+return;
 }
 
-const answer =
-  data &&
-  data.choices &&
-  data.choices[0] &&
-  data.choices[0].message &&
-  data.choices[0].message.content;
-
-if (!answer) {
-  console.error("INVALID RESPONSE:", data);
-  return ctx.reply("❌ پاسخی دریافت نشد");
-}
-
-await ctx.reply(answer);
-```
-
-} catch (error) {
-console.error("FULL ERROR:", error);
-await ctx.reply("❌ خطا در ارتباط با هوش مصنوعی");
-}
+ctx.reply(
+`📌 نمونه محتوا برای:\n${text}\n\n✨ اینجا بعداً تولید محتوای هوشمند اضافه می‌شود.`
+);
 });
 
 bot.launch();
 
-console.log("🚀 GazaAI Bot Started");
+console.log("🚀 Content Bot Started");
